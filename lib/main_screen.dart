@@ -100,6 +100,23 @@ Future changeMemmoryStatus(int mem) async {
   }   
 } 
 
+Future changeChildStatus(int mem) async { 
+  final database = openDatabase(
+    join(await getDatabasesPath(), 'judyth_memory.db'),
+  );
+  final db = await database;
+
+  List<Map<String, Object?>> tempstatus = await db.rawQuery('SELECT status FROM judyth_task WHERE id = ?', [mem]);
+  
+    await db.update(
+      'judyth_task',   
+      {'childIDs': 1},
+      where: 'id = ?',
+      whereArgs: [mem]
+    );
+} 
+
+
 Future setParentId(int mem, int parent) async { 
   final database = openDatabase(
     join(await getDatabasesPath(), 'judyth_memory.db'),
@@ -132,6 +149,34 @@ Future<bool> isParent(int mem) async {
   }
 }
 
+void zuruckCheck(int mem) async {
+
+  //Check if there is a task in the current level and set the child state for the receiving parent
+  
+  final database = openDatabase(
+    join(await getDatabasesPath(), 'judyth_memory.db'),
+  );
+  final db = await database;
+
+  List<Map<String, Object?>> tempParent = await db.rawQuery('SELECT * FROM judyth_task WHERE parentId = ?', [mem]);
+  //print("Parent Liste: $tempParent");
+  if (tempParent.isNotEmpty) {
+    // Heist das ein task in der childliste ist, also muss der parent task ein child von 1 bekommen
+    changeChildStatus(mem);
+
+    print("TaskID: $mem Return true");
+
+  } else {
+     print("TaskID: $mem Return false");
+
+  }
+    setState(() {
+      //_textinput = _textcontroler.text;
+      print('List middle = : ${widget.memoryList.length}'); 
+    });
+  
+}
+
 final _textcontroler = TextEditingController(); 
 
 
@@ -160,12 +205,15 @@ final _textcontroler = TextEditingController();
           elevation: 0,       
           centerTitle: false,
           leading: (widget.memoryList.length > 1) ? InkWell(
+              //Falls die memoryList mehr als ein Element hat, zeige den Zurück-Button an
               onTap: () {
                 
+                zuruckCheck(widget.memoryList.last);
+
                 Navigator.pop(context);
                 setState(() {
                   //_textinput = _textcontroler.text;
-                  print('List middle = : ${widget.memoryList.length}'); 
+                  //print('List middle = : ${widget.memoryList.length}'); 
                 });
               },
               child: Icon(
@@ -173,7 +221,7 @@ final _textcontroler = TextEditingController();
                 color: Color.fromARGB(255, 9, 7, 7),
               ),
               
-            ) : null,
+            ) : null,  //Sonnst, kein Zurückbotton (NULL)
           title: Text("Todo: ${widget.taskName}",
             style: TextStyle(
             fontSize: 24,
