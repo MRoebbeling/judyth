@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:judyth/main_screen.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'main_screen.dart';
+//import 'test.dart';
 
 void main() async {
 
@@ -11,12 +13,13 @@ void main() async {
     join(await getDatabasesPath(), 'judyth_memory.db'),
     onCreate: (db, version) async {
       await db.execute(
-          'CREATE TABLE judyth_task(id INTEGER PRIMARY KEY, task TEXT, status INT, parentId INT)');
+          'CREATE TABLE judyth_task(id INTEGER PRIMARY KEY, task TEXT, status INT, parentId INT, childIDs INT)');
       print('Hat es geklappt?');
     },
     onOpen: (db) async {
       print('DB is already created');
-      //final List<Map<String, Object?>> _exercises = await db.query('exercise');
+
+      //final List<Map<String, Object?>> _exercises = rawait db.query('exercise');
       //_exercises = await db.query('exercise');
       //print('Geladene Exercises: $_exercises');
       await db.close();
@@ -45,13 +48,31 @@ class _MainAppState extends State<MainApp> {
     FlutterNativeSplash.remove();
   }*/
 
+//String taskName = 'Daily Tasks';
+
+
+
+
   @override
   Widget build(BuildContext context) {
+
+    /*void openMainScreen() {
+    
+      Navigator.push(context, MaterialPageRoute(
+            builder: (context) => const Mainscreen(
+            taskName: 'Daily Tasks', 
+            memoryList: [0],
+          ),
+        ),
+      );
+    }*/
+
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
-          alignment: Alignment.center,
+          alignment: Alignment.topLeft,
           padding: const EdgeInsets.all(10),
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -59,7 +80,9 @@ class _MainAppState extends State<MainApp> {
               fit: BoxFit.cover,
             ),
           ),
-          child: const Mainscreen(),
+          child: const Mainscreen(
+            taskName: "Daily Task",
+            memoryList: [0])
         ),
       ),
     );
