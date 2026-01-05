@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:judyth/main_screen.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'main_screen.dart';
 //import 'test.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
 
   openDatabase(
     join(await getDatabasesPath(), 'judyth_memory.db'),
     onCreate: (db, version) async {
       await db.execute(
-          'CREATE TABLE judyth_task(id INTEGER PRIMARY KEY, task TEXT, status INT, parentId INT, childIDs INT)');
+        'CREATE TABLE judyth_task(id INTEGER PRIMARY KEY, task TEXT, status INT, parentId INT, childIDs INT)',
+      );
       print('Hat es geklappt?');
     },
     onOpen: (db) async {
@@ -48,14 +47,10 @@ class _MainAppState extends State<MainApp> {
     FlutterNativeSplash.remove();
   }*/
 
-//String taskName = 'Daily Tasks';
-
-
-
+  //String taskName = 'Daily Tasks';
 
   @override
   Widget build(BuildContext context) {
-
     /*void openMainScreen() {
     
       Navigator.push(context, MaterialPageRoute(
@@ -66,7 +61,6 @@ class _MainAppState extends State<MainApp> {
         ),
       );
     }*/
-
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -80,9 +74,7 @@ class _MainAppState extends State<MainApp> {
               fit: BoxFit.cover,
             ),
           ),
-          child: const Mainscreen(
-            taskName: "Daily Task",
-            memoryList: [0])
+          child: const Mainscreen(taskName: "Daily Task", memoryList: [0]),
         ),
       ),
     );
