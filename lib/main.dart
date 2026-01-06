@@ -67,7 +67,7 @@ class _MainAppState extends State<MainApp> {
       home: Scaffold(
         body: Container(
           alignment: Alignment.topLeft,
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(0),
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/judyth-background.jpg'),

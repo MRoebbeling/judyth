@@ -324,7 +324,7 @@ class _MainscreenState extends State<Mainscreen> {
                                         child: Icon(
                                           (snapshot.data![index].status == 0)
                                               ? Icons.radio_button_unchecked
-                                              : Icons.error_outline,
+                                              : Icons.radio_button_checked,
                                           color: Color.fromARGB(255, 9, 7, 7),
                                           size: 30,
                                         ),
@@ -368,9 +368,10 @@ class _MainscreenState extends State<Mainscreen> {
                                                 memoryList: tmpList,
                                               ),
                                             ),
-                                          );
-                                          setState(() {
-                                            //_textinput = _textcontroler.text;
+                                          ).then((_) {
+                                            setState(() {
+                                              //_textinput = _textcontroler.text;
+                                            });
                                           });
                                         },
                                         child:
