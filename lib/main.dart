@@ -70,7 +70,7 @@ class _MainAppState extends State<MainApp> {
           padding: const EdgeInsets.all(0),
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/judyth-background.jpg'),
+              image: AssetImage('assets/background.jpg'),
               fit: BoxFit.cover,
             ),
           ),

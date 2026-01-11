@@ -36,7 +36,7 @@ class _MainscreenState extends State<Mainscreen> {
         'childIDs': 0,
       });
     }
-    print("actual memoryList: ${memoryList.last}");
+    //print("actual memoryList: ${memoryList.last}");
   }
 
   Future<List<MemoryModel>> getTaskList(List memoryList) async {
@@ -129,7 +129,7 @@ class _MainscreenState extends State<Mainscreen> {
       where: 'id = ?',
       whereArgs: [mem],
     );
-    print("Versuch parentID zu äbndert $mem zu $parent");
+    //print("Versuch parentID zu äbndert $mem zu $parent");
   }
 
   Future<bool> isParent(int mem) async {
@@ -142,12 +142,12 @@ class _MainscreenState extends State<Mainscreen> {
       'SELECT * FROM judyth_task WHERE parentId = ?',
       [mem],
     );
-    print("Parent Liste: $tempParent");
+    //print("Parent Liste: $tempParent");
     if (tempParent.isNotEmpty) {
-      print("Return true");
+      //print("Return true");
       return true;
     } else {
-      print("Return false");
+      //print("Return false");
       return false;
     }
   }
@@ -169,14 +169,14 @@ class _MainscreenState extends State<Mainscreen> {
       // Heist das ein task in der childliste ist, also muss der parent task ein child von 1 bekommen
       changeChildStatus(mem, 1);
 
-      print("TaskID: $mem Return true");
+      //print("TaskID: $mem Return true");
     } else {
       changeChildStatus(mem, 0);
-      print("TaskID: $mem Return false");
+      //print("TaskID: $mem Return false");
     }
     setState(() {
       //_textinput = _textcontroler.text;
-      print('List middle = : ${widget.memoryList.length}');
+      //print('List middle = : ${widget.memoryList.length}');
     });
   }
 
@@ -198,11 +198,9 @@ class _MainscreenState extends State<Mainscreen> {
     //print('TMP-List at start = : ${widget.memoryList}');
 
     //print("MemoryList: $widget.memoryList");
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 192, 192, 192),
+          backgroundColor: Color.fromARGB(255, 144, 144, 144),
           elevation: 0,
           centerTitle: false,
           leading: (widget.memoryList.length > 1)
@@ -228,7 +226,13 @@ class _MainscreenState extends State<Mainscreen> {
             ),
           ),
         ),
-        body: SafeArea(
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/judyth-background.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(0.0),
             child: Column(
@@ -268,7 +272,7 @@ class _MainscreenState extends State<Mainscreen> {
               ),  */
 
                 /* Abstandshalter Titel Liste */
-                SizedBox(height: 20, width: double.infinity),
+                //SizedBox(height: 20, width: double.infinity),
 
                 /* Liste mit tasks */
                 FutureBuilder<List<dynamic>>(
@@ -357,7 +361,7 @@ class _MainscreenState extends State<Mainscreen> {
                                             widget.memoryList,
                                           );
                                           tmpList.add(snapshot.data![index].id);
-                                          print('TMP-List = : $tmpList');
+                                          //print('TMP-List = : $tmpList');
 
                                           Navigator.push(
                                             context,
@@ -372,6 +376,7 @@ class _MainscreenState extends State<Mainscreen> {
                                             setState(() {
                                               //_textinput = _textcontroler.text;
                                             });
+                                            print ("The State is set");
                                           });
                                         },
                                         child:
@@ -443,67 +448,69 @@ class _MainscreenState extends State<Mainscreen> {
                 Untere Eingabe der Tasks
 
                 */
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(132, 180, 180, 180),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.75,
-                        child: TextField(
-                          controller: _textcontroler,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter item to remember',
-                            hintStyle: TextStyle(
-                              fontSize: 20.0,
-                              color: Color(0X66000000),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(132, 180, 180, 180),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.75,
+                          child: TextField(
+                            controller: _textcontroler,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter item to remember',
+                              hintStyle: TextStyle(
+                                fontSize: 20.0,
+                                color: Color(0X66000000),
+                              ),
+                              contentPadding: EdgeInsets.all(10.0),
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
                             ),
-                            contentPadding: EdgeInsets.all(10.0),
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
+                  
+                            style: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 20,
+                              color: Color(0xFF000000),
+                            ),
+                            onSubmitted: (value) {
+                              insertDB(_textcontroler.text, widget.memoryList);
+                              setState(() {
+                                //_textinput =
+                                _textcontroler.clear();
+                              });
+                            },
                           ),
-
-                          style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 20,
-                            color: Color(0xFF000000),
-                          ),
-                          onSubmitted: (value) {
+                        ),
+                        TextButton(
+                          onPressed: () {
                             insertDB(_textcontroler.text, widget.memoryList);
                             setState(() {
                               //_textinput =
                               _textcontroler.clear();
                             });
                           },
+                          child: const Icon(
+                            Icons.add_circle,
+                            color: Colors.black,
+                            size: 30,
+                          ),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          insertDB(_textcontroler.text, widget.memoryList);
-                          setState(() {
-                            //_textinput =
-                            _textcontroler.clear();
-                          });
-                        },
-                        child: const Icon(
-                          Icons.add_circle,
-                          color: Colors.black,
-                          size: 30,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
         ),
-      ),
     );
   }
 }
