@@ -199,46 +199,46 @@ class _MainscreenState extends State<Mainscreen> {
 
     //print("MemoryList: $widget.memoryList");
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 144, 144, 144),
-          elevation: 0,
-          centerTitle: false,
-          leading: (widget.memoryList.length > 1)
-              ? InkWell(
-                  //Falls die memoryList mehr als ein Element hat, zeige den Zurück-Button an
-                  onTap: () {
-                    zuruckCheck(widget.memoryList.last);
-                    setState(() {});
-                    Navigator.pop(context);
-                  },
-                  child: Icon(
-                    Icons.navigate_before,
-                    color: Color.fromARGB(255, 9, 7, 7),
-                  ),
-                )
-              : null, //Sonnst, kein Zurückbotton (NULL)
-          title: Text(
-            "Todo: ${widget.taskName}",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 144, 144, 144),
+        elevation: 0,
+        centerTitle: false,
+        leading: (widget.memoryList.length > 1)
+            ? InkWell(
+                //Falls die memoryList mehr als ein Element hat, zeige den Zurück-Button an
+                onTap: () {
+                  zuruckCheck(widget.memoryList.last);
+                  setState(() {});
+                  Navigator.pop(context);
+                },
+                child: Icon(
+                  Icons.navigate_before,
+                  color: Color.fromARGB(255, 9, 7, 7),
+                ),
+              )
+            : null, //Sonnst, kein Zurückbotton (NULL)
+        title: Text(
+          "Todo: ${widget.taskName}",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
-        body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/judyth-background.jpg'),
-              fit: BoxFit.cover,
-            ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/judyth-background.jpg'),
+            fit: BoxFit.cover,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(0.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /*Padding (padding: EdgeInsets.only(left: 15),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /*Padding (padding: EdgeInsets.only(left: 15),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -271,246 +271,246 @@ class _MainscreenState extends State<Mainscreen> {
                   ),
               ),  */
 
-                /* Abstandshalter Titel Liste */
-                //SizedBox(height: 20, width: double.infinity),
+              /* Abstandshalter Titel Liste */
+              //SizedBox(height: 20, width: double.infinity),
 
-                /* Liste mit tasks */
-                FutureBuilder<List<dynamic>>(
-                  future: getTaskList(widget.memoryList),
-                  builder:
-                      (
-                        BuildContext context,
-                        AsyncSnapshot<List<dynamic>> snapshot,
-                      ) {
-                        List<Widget> children;
-                        if (snapshot.hasData) {
-                          children = <Widget>[
-                            /*Padding(
+              /* Liste mit tasks */
+              FutureBuilder<List<dynamic>>(
+                future: getTaskList(widget.memoryList),
+                builder:
+                    (
+                      BuildContext context,
+                      AsyncSnapshot<List<dynamic>> snapshot,
+                    ) {
+                      List<Widget> children;
+                      if (snapshot.hasData) {
+                        children = <Widget>[
+                          /*Padding(
                               padding: EdgeInsets.only(top: 16),
                               child: Text('The result...${snapshot.data}'),
                             ),*/
-                            Expanded(
-                              child: ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemCount: snapshot.data?.length,
-                                itemBuilder: (context, index) {
-                                  return Card(
-                                    margin: const EdgeInsets.symmetric(
-                                      vertical: 2,
-                                    ),
-                                    color: const Color.fromARGB(0, 5, 148, 244),
-                                    elevation: 0,
-                                    shape: Border(
-                                      bottom: BorderSide(
-                                        color: const Color.fromARGB(
-                                          120,
-                                          212,
-                                          212,
-                                          212,
-                                        ),
-                                        width: 1.0,
+                          Expanded(
+                            child: ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: snapshot.data?.length,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 2,
+                                  ),
+                                  color: const Color.fromARGB(0, 5, 148, 244),
+                                  elevation: 0,
+                                  shape: Border(
+                                    bottom: BorderSide(
+                                      color: const Color.fromARGB(
+                                        120,
+                                        212,
+                                        212,
+                                        212,
                                       ),
+                                      width: 1.0,
                                     ),
-                                    child: ListTile(
-                                      /* 
+                                  ),
+                                  child: ListTile(
+                                    /* 
                                           Leading Icon zum Abhaken der Tasks
                                           */
-                                      leading: InkWell(
-                                        onTap: () {
-                                          changeMemmoryStatus(
-                                            snapshot.data![index].id,
-                                          );
-                                          setState(() {
-                                            //_textinput = _textcontroler.text;
-                                          });
-                                        },
-                                        child: Icon(
-                                          (snapshot.data![index].status == 0)
-                                              ? Icons.radio_button_unchecked
-                                              : Icons.radio_button_checked,
-                                          color: Color.fromARGB(255, 9, 7, 7),
-                                          size: 30,
-                                        ),
-                                      ),
-
-                                      /* 
-                                          TaskText
-                                          */
-                                      title: Text(
-                                        snapshot.data![index].task,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 20,
-                                          color: Color.fromARGB(255, 0, 0, 0),
-                                        ),
-                                      ),
-
-                                      /*
-                                          EndIcon zum weitergehen in die Untertasks
-                                          */
-                                      trailing: InkWell(
-                                        onTap: () {
-                                          setParentId(
-                                            snapshot.data![index].id,
-                                            widget.memoryList.last,
-                                          );
-
-                                          //widget.memoryList.add(snapshot.data![index].id);
-                                          tmpList = List.from(
-                                            widget.memoryList,
-                                          );
-                                          tmpList.add(snapshot.data![index].id);
-                                          //print('TMP-List = : $tmpList');
-
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => Mainscreen(
-                                                taskName:
-                                                    snapshot.data![index].task,
-                                                memoryList: tmpList,
-                                              ),
-                                            ),
-                                          ).then((_) {
-                                            setState(() {
-                                              //_textinput = _textcontroler.text;
-                                            });
-                                            print ("The State is set");
-                                          });
-                                        },
-                                        child:
-                                            (snapshot.data![index].childIDs !=
-                                                0)
-                                            ? Icon(
-                                                Icons.arrow_circle_right,
-                                                color: Color.fromARGB(
-                                                  255,
-                                                  0,
-                                                  0,
-                                                  0,
-                                                ),
-                                                size: 30,
-                                              )
-                                            : Icon(
-                                                Icons.arrow_circle_right,
-                                                color: Color.fromARGB(
-                                                  255,
-                                                  191,
-                                                  191,
-                                                  191,
-                                                ),
-                                                size: 30,
-                                              ),
+                                    leading: InkWell(
+                                      onTap: () {
+                                        changeMemmoryStatus(
+                                          snapshot.data![index].id,
+                                        );
+                                        setState(() {
+                                          //_textinput = _textcontroler.text;
+                                        });
+                                      },
+                                      child: Icon(
+                                        (snapshot.data![index].status == 0)
+                                            ? Icons.radio_button_unchecked
+                                            : Icons.radio_button_checked,
+                                        color: Color.fromARGB(255, 9, 7, 7),
+                                        size: 30,
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ];
-                        } else if (snapshot.hasError) {
-                          children = <Widget>[
-                            const Icon(
-                              Icons.error_outline,
-                              color: Color.fromARGB(255, 153, 255, 0),
-                              size: 60,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 16),
-                              child: Text('Error: ${snapshot.error}'),
-                            ),
-                          ];
-                        } else {
-                          children = const <Widget>[
-                            SizedBox(
-                              width: 60,
-                              height: 60,
-                              child: CircularProgressIndicator(),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 16),
-                              child: Text('Awaiting result...'),
-                            ),
-                          ];
-                        }
-                        return Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: children,
-                          ),
-                        );
-                      },
-                ),
 
-                /*
+                                    /* 
+                                          TaskText
+                                          */
+                                    title: Text(
+                                      snapshot.data![index].task,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 20,
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                      ),
+                                    ),
+
+                                    /*
+                                          EndIcon zum weitergehen in die Untertasks
+                                          */
+                                    trailing: InkWell(
+                                      onTap: () {
+                                        setParentId(
+                                          snapshot.data![index].id,
+                                          widget.memoryList.last,
+                                        );
+
+                                        //widget.memoryList.add(snapshot.data![index].id);
+                                        tmpList = List.from(widget.memoryList);
+                                        tmpList.add(snapshot.data![index].id);
+                                        //print('TMP-List = : $tmpList');
+
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Mainscreen(
+                                              taskName:
+                                                  snapshot.data![index].task,
+                                              memoryList: tmpList,
+                                            ),
+                                          ),
+                                        ).then((_) {
+                                          print(snapshot.data![index].childIDs);
+                                          setState(() {
+                                            //
+
+                                            //_textinput = _textcontroler.text;
+                                          });
+                                          print("The State is set");
+                                        });
+                                      },
+                                      child:
+                                          (snapshot.data![index].childIDs != 0)
+                                          ? Icon(
+                                              Icons.arrow_circle_right,
+                                              color: Color.fromARGB(
+                                                255,
+                                                0,
+                                                0,
+                                                0,
+                                              ),
+                                              size: 30,
+                                            )
+                                          : Icon(
+                                              Icons.arrow_circle_right,
+                                              color: Color.fromARGB(
+                                                255,
+                                                191,
+                                                191,
+                                                191,
+                                              ),
+                                              size: 30,
+                                            ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ];
+                      } else if (snapshot.hasError) {
+                        children = <Widget>[
+                          const Icon(
+                            Icons.error_outline,
+                            color: Color.fromARGB(255, 153, 255, 0),
+                            size: 60,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text('Error: ${snapshot.error}'),
+                          ),
+                        ];
+                      } else {
+                        children = const <Widget>[
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: CircularProgressIndicator(),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 16),
+                            child: Text('Awaiting result...'),
+                          ),
+                        ];
+                      }
+                      return Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: children,
+                        ),
+                      );
+                    },
+              ),
+
+              /*
 
                 Untere Eingabe der Tasks
 
                 */
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(132, 180, 180, 180),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.75,
-                          child: TextField(
-                            controller: _textcontroler,
-                            decoration: const InputDecoration(
-                              hintText: 'Enter item to remember',
-                              hintStyle: TextStyle(
-                                fontSize: 20.0,
-                                color: Color(0X66000000),
-                              ),
-                              contentPadding: EdgeInsets.all(10.0),
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(132, 180, 180, 180),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.75,
+                        child: TextField(
+                          controller: _textcontroler,
+                          decoration: const InputDecoration(
+                            hintText: 'Enter item to remember',
+                            hintStyle: TextStyle(
+                              fontSize: 20.0,
+                              color: Color(0X66000000),
                             ),
-                  
-                            style: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 20,
-                              color: Color(0xFF000000),
-                            ),
-                            onSubmitted: (value) {
-                              insertDB(_textcontroler.text, widget.memoryList);
-                              setState(() {
-                                //_textinput =
-                                _textcontroler.clear();
-                              });
-                            },
+                            contentPadding: EdgeInsets.all(10.0),
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {
+
+                          style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 20,
+                            color: Color(0xFF000000),
+                          ),
+                          onSubmitted: (value) {
                             insertDB(_textcontroler.text, widget.memoryList);
                             setState(() {
                               //_textinput =
                               _textcontroler.clear();
                             });
                           },
-                          child: const Icon(
-                            Icons.add_circle,
-                            color: Colors.black,
-                            size: 30,
-                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          insertDB(_textcontroler.text, widget.memoryList);
+                          setState(() {
+                            //_textinput =
+                            _textcontroler.clear();
+                          });
+                        },
+                        child: const Icon(
+                          Icons.add_circle,
+                          color: Colors.black,
+                          size: 30,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }
