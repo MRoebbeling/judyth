@@ -83,6 +83,7 @@ class _MainscreenState extends State<Mainscreen> {
     );
 
     if (tempstatus[0]['status'] == 0) {
+      print("Status is 0, change to 1");
       await db.update(
         'judyth_task',
         {'status': 1},
@@ -191,7 +192,14 @@ class _MainscreenState extends State<Mainscreen> {
     //print("TMP MemoryList: $tmplist");
   }*/
 
+  late Future<List<dynamic>> myTaskList;
+
   @override
+  void initState() {
+    super.initState();
+    myTaskList = getTaskList(widget.memoryList);
+  }
+
   Widget build(BuildContext context) {
     //tmpList = List.from(widget.memoryList);
     //tmpList.add(snapshot.data![index].id);
@@ -208,7 +216,9 @@ class _MainscreenState extends State<Mainscreen> {
                 //Falls die memoryList mehr als ein Element hat, zeige den Zurück-Button an
                 onTap: () {
                   zuruckCheck(widget.memoryList.last);
-                  setState(() {});
+                  setState(() {
+                    myTaskList = getTaskList(widget.memoryList);
+                  });
                   Navigator.pop(context);
                 },
                 child: Icon(
@@ -276,7 +286,7 @@ class _MainscreenState extends State<Mainscreen> {
 
               /* Liste mit tasks */
               FutureBuilder<List<dynamic>>(
-                future: getTaskList(widget.memoryList),
+                future: myTaskList,
                 builder:
                     (
                       BuildContext context,
@@ -317,12 +327,17 @@ class _MainscreenState extends State<Mainscreen> {
                                           Leading Icon zum Abhaken der Tasks
                                           */
                                     leading: InkWell(
-                                      onTap: () {
-                                        changeMemmoryStatus(
+                                      onTap: () async {
+                                        await changeMemmoryStatus(
                                           snapshot.data![index].id,
                                         );
                                         setState(() {
-                                          //_textinput = _textcontroler.text;
+                                          myTaskList = getTaskList(
+                                            widget.memoryList,
+                                          );
+                                          print(
+                                            "Eigentlich sollte es funktionieren",
+                                          );
                                         });
                                       },
                                       child: Icon(
@@ -373,9 +388,9 @@ class _MainscreenState extends State<Mainscreen> {
                                         ).then((_) {
                                           print(snapshot.data![index].childIDs);
                                           setState(() {
-                                            //
-
-                                            //_textinput = _textcontroler.text;
+                                            myTaskList = getTaskList(
+                                              widget.memoryList,
+                                            );
                                           });
                                           print("The State is set");
                                         });
@@ -483,7 +498,7 @@ class _MainscreenState extends State<Mainscreen> {
                           onSubmitted: (value) {
                             insertDB(_textcontroler.text, widget.memoryList);
                             setState(() {
-                              //_textinput =
+                              myTaskList = getTaskList(widget.memoryList);
                               _textcontroler.clear();
                             });
                           },
@@ -492,7 +507,10 @@ class _MainscreenState extends State<Mainscreen> {
                       TextButton(
                         onPressed: () {
                           insertDB(_textcontroler.text, widget.memoryList);
+                          print("New Task Added");
                           setState(() {
+                            myTaskList = getTaskList(widget.memoryList);
+
                             //_textinput =
                             _textcontroler.clear();
                           });
