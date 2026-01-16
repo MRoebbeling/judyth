@@ -1,4 +1,4 @@
-//import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
@@ -56,13 +56,18 @@ class _MainscreenState extends State<Mainscreen> {
     final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
     final db = await database;
 
-    List<Map<String, Object?>> tempstatus = await db.rawQuery('SELECT status FROM judyth_task WHERE id = ?', [mem]);
+    List<Map<String, Object?>> tempstatus = await db.rawQuery('SELECT status, childIDs FROM judyth_task WHERE id = ?', [mem]);
 
-    if (tempstatus[0]['status'] == 0) {
-      print("Status is 0, change to 1");
-      await db.update('judyth_task', {'status': 1}, where: 'id = ?', whereArgs: [mem]);
-    } else if (tempstatus[0]['status'] == 1) {
-      await db.delete('judyth_task', where: 'id = ?', whereArgs: [mem]);
+    if (tempstatus[0]['childIDs'] != 0) {
+      print('Ist schon belegt: ${tempstatus[0]['childIDs']}');
+    }
+    else {
+      if (tempstatus[0]['status'] == 0) {
+        print("Status is 0, change to 1");
+        await db.update('judyth_task', {'status': 1}, where: 'id = ?', whereArgs: [mem]);
+      } else if (tempstatus[0]['status'] == 1) {
+        await db.delete('judyth_task', where: 'id = ?', whereArgs: [mem]);
+      }
     }
   }
 
@@ -83,6 +88,17 @@ class _MainscreenState extends State<Mainscreen> {
     final db = await database;
     await db.update('judyth_task', {'parentId': parent}, where: 'id = ?', whereArgs: [mem]);
     //print("Versuch parentID zu äbndert $mem zu $parent");
+  }
+
+  Future changeParentStatus(int parent, int status) async {
+    final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
+    final db = await database;
+    print('Der Tyz des Status ${status.runtimeType}');
+    if (status == 1) {
+          await db.update('judyth_task', {'status': 1}, where: 'id = ?', whereArgs: [parent]);
+    } else {
+          await db.update('judyth_task', {'status': 0}, where: 'id = ?', whereArgs: [parent]);
+    }
   }
 
   Future<bool> isParent(int mem) async {
@@ -111,6 +127,20 @@ class _MainscreenState extends State<Mainscreen> {
     if (tempParent.isNotEmpty) {
       // Heist das ein task in der childliste ist, also muss der parent task ein child von 1 bekommen
       changeChildStatus(mem, 1);
+
+      // Checken ob in einem der Children der Status 1 ist
+      print('Anzahl der Elemente in der Liste: ${tempParent.length} : ${tempParent}');
+      int tempstatus=0;
+      for (var i = 0; i < tempParent.length; i++) {
+        if (tempParent[i]['status'] == 1) {
+          tempstatus = 1;
+        }
+      }
+      if (tempstatus == 1) {
+        changeParentStatus(mem,1);
+      } else {
+        changeParentStatus(mem,0);
+      }
 
       //print("TaskID: $mem Return true");
     } else {
@@ -246,13 +276,12 @@ class _MainscreenState extends State<Mainscreen> {
                                     await changeMemmoryStatus(snapshot.data![index].id);
                                     setState(() {
                                       myTaskList = getTaskList(widget.memoryList);
-                                      print("Eigentlich sollte es funktionieren");
                                     });
                                   },
                                   child: Icon(
                                     (snapshot.data![index].status == 0)
-                                        ? Icons.radio_button_unchecked
-                                        : Icons.radio_button_checked,
+                                        ? CupertinoIcons.square
+                                        : CupertinoIcons.minus_square,
                                     color: Color.fromARGB(255, 9, 7, 7),
                                     size: 30,
                                   ),

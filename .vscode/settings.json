@@ -1,3 +1,7 @@
 {
-    "editor.inlayHints.maximumLength": 0
+    "editor.inlayHints.maximumLength": 0,
+    "editor.fontSize": 12,
+    "cmake.sourceDirectory": "/Users/michaelroebbeling/development/judyth/linux",
+    "terminal.integrated.fontSize": 11,
+    "debug.console.fontSize": 8
 }
