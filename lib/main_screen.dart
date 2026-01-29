@@ -360,7 +360,7 @@ class _MainscreenState extends State<Mainscreen> {
 
                 Untere Eingabe der Tasks
 
-                */
+                
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -411,11 +411,32 @@ class _MainscreenState extends State<Mainscreen> {
                     ],
                   ),
                 ),
-              ),
+              ),*/
+
+              
+
             ],
           ),
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+                items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.home),
+                        label: 'home',
+                    ),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.add_circle),
+                        label: 'Add Task',
+                    ),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.settings),
+                        label: 'Settings',
+                    ),
+                ],
+                //currentIndex: _selectedIndex,
+                //onTap: _onItemTapped,
+            ),
     );
   }
 }
