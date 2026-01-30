@@ -1,0 +1,69 @@
+
+{
+    "ColorPalettes":[
+        {
+            "palette1": {
+                "palette-id": 1,
+                "palette-name": "old rainbow",
+                "colors": {
+                    "colors1": "#FFFFADAD",
+                    "colors2": "#FFFFD6A5",
+                    "colors3": "#FFFDFFB6",
+                    "colors4": "#FFCAFFBF",
+                    "colors5": "#FF9BF6FF",
+                    "colors6": "#FFA0C4FF",
+                    "colors7": "#FFBDB2FF",
+                    "colors8": "#FFFFC6FF"
+                }
+            }
+        },
+        {
+            "palette2": {
+                "palette-id": 2,
+                "palette-name": "old rainbow transparent",
+                "colors": {
+                    "colors1": "#40FF0B0B",
+                    "colors2": "#40FF971B",
+                    "colors3": "#40F1F800",
+                    "colors4": "#4028E600",
+                    "colors5": "#402FECFF",
+                    "colors6": "#402578FF",
+                    "colors7": "#402501FF",
+                    "colors8": "#40D800D8"
+                }
+            }
+        },
+        {
+            "palette3": {
+                "palette-id": 3,
+                "palette-name": "Candystore",
+                "colors": {
+                    "colors1": "#70FF5FBE",
+                    "colors2": "#70FF8FD2",
+                    "colors3": "#70FFBDE7",
+                    "colors4": "#70F9E5EA",
+                    "colors5": "#70DDB6CF",
+                    "colors6": "#70AEAEF4",
+                    "colors7": "#70898FE0",
+                    "colors8": "#706D72CC"
+                }
+            }
+        },
+        {
+            "palette4": {
+                "palette-id": 4,
+                "palette-name": "Ocean Breeze",
+                "colors": {
+                    "colors1": "#7095C1C6",
+                    "colors2": "#70B2CCD3",
+                    "colors3": "#70C6DBE0",
+                    "colors4": "#70F2E4D7",
+                    "colors5": "#70D1B9A7",
+                    "colors6": "#70D9E7ED",
+                    "colors7": "#70B0D6D3",
+                    "colors8": "#7086BCB4"
+                }
+            }
+        }
+    ]
+}

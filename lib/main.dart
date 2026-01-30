@@ -7,7 +7,7 @@ import 'package:path/path.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  openDatabase(
+  /*openDatabase(
     join(await getDatabasesPath(), 'judyth_memory.db'),
     onCreate: (db, version) async {
       await db.execute(
@@ -24,7 +24,7 @@ void main() async {
       await db.close();
     },
     version: 1,
-  );
+  );*/
   runApp(const MainApp());
 }
 
@@ -69,10 +69,7 @@ class _MainAppState extends State<MainApp> {
           alignment: Alignment.topLeft,
           padding: const EdgeInsets.all(0),
           decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/background.jpg'),
-              fit: BoxFit.cover,
-            ),
+            image: DecorationImage(image: AssetImage('assets/background.jpg'), fit: BoxFit.cover),
           ),
           child: const Mainscreen(taskName: "Daily Task", memoryList: [0]),
         ),

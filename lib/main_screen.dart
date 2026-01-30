@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/services.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'package:judyth/models/memory_model.dart';
+//import 'package:sqflite/sqflite.dart';
+//import 'package:path/path.dart';
+//import 'package:judyth/models/memory_model.dart';
+import 'package:judyth/db_methods.dart';
+import 'package:judyth/models/color_palettes.dart';
 
 class Mainscreen extends StatefulWidget {
   final String taskName;
@@ -19,154 +21,110 @@ class Mainscreen extends StatefulWidget {
 //List<dynamic> tmpList = widget.memoryList;
 
 class _MainscreenState extends State<Mainscreen> {
-  Future insertDB(String mem, List memoryList) async {
-    if (mem != "") {
-      final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
-      final db = await database;
-      await db.insert('judyth_task', {'task': mem, 'status': 0, 'parentId': memoryList.last, 'childIDs': 0});
-    }
-    //print("actual memoryList: ${memoryList.last}");
-  }
-
-  Future<List<MemoryModel>> getTaskList(List memoryList) async {
-    // Get a reference to the database.
-    final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
-    final db = await database;
-
-    // Query the table for all the dogs.
-    final List<Map<String, Object?>> memoryMaps = await db.rawQuery(
-      'SELECT * FROM judyth_task WHERE parentId IS (${memoryList.last})',
+  void _showTextInput(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows the sheet to push up with the keyboard
+      builder: (context) {
+        return Container(
+          color: Color.fromARGB(255, 255, 255, 255),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom, // Key for keyboard padding
+              left: 16,
+              right: 16,
+              top: 16,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Add new Category:',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(CupertinoIcons.house, size: 30, color: Colors.grey),
+                    Icon(CupertinoIcons.person_crop_circle, size: 30, color: Colors.grey),
+                    Icon(CupertinoIcons.tree, size: 30, color: Colors.grey),
+                    Icon(CupertinoIcons.bell, size: 30, color: Colors.grey),
+                    Icon(CupertinoIcons.tortoise, size: 30, color: Colors.grey),
+                    Icon(CupertinoIcons.rocket, size: 30, color: Colors.grey),
+                    Icon(CupertinoIcons.phone, size: 30, color: Colors.grey),
+                  ],
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: _textcontroler,
+                  autofocus: true, // Opens keyboard automatically
+                  decoration: InputDecoration(
+                    hintText: 'Type something...',
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(0)),
+                      borderSide: BorderSide(color: const Color.fromARGB(255, 255, 255, 255)),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Close the bottom sheet
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Handle the submission logic here
+                        await insertDB(_textcontroler.text, widget.memoryList);
+                        setState(() {
+                          _textcontroler.clear();
+                          myTaskList = getTaskList(widget.memoryList);
+                        });
+                        Navigator.pop(context); // Close the bottom sheet
+                      },
+                      child: Text('Add'),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
     );
-
-    // Convert the list of each dog's fields into a list of `Dog` objects.
-    return [
-      for (final {
-            'id': id as int,
-            'task': task as String,
-            'status': status as int,
-            'parentId': parentId as int,
-            'childIDs': childIDs as int,
-          }
-          in memoryMaps)
-        MemoryModel(id: id, task: task, status: status, parentId: parentId, childIDs: childIDs),
-    ];
-  }
-
-  Future changeMemmoryStatus(int mem) async {
-    final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
-    final db = await database;
-
-    List<Map<String, Object?>> tempstatus = await db.rawQuery('SELECT status, childIDs FROM judyth_task WHERE id = ?', [mem]);
-
-    if (tempstatus[0]['childIDs'] != 0) {
-      print('Ist schon belegt: ${tempstatus[0]['childIDs']}');
-    }
-    else {
-      if (tempstatus[0]['status'] == 0) {
-        print("Status is 0, change to 1");
-        await db.update('judyth_task', {'status': 1}, where: 'id = ?', whereArgs: [mem]);
-      } else if (tempstatus[0]['status'] == 1) {
-        await db.delete('judyth_task', where: 'id = ?', whereArgs: [mem]);
-      }
-    }
-  }
-
-  Future changeChildStatus(int mem, int childstate) async {
-    final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
-    final db = await database;
-
-    //List<Map<String, Object?>> tempstatus = await db.rawQuery('SELECT status FROM judyth_task WHERE id = ?', [mem]);
-    if (childstate == 1) {
-      await db.update('judyth_task', {'childIDs': 1}, where: 'id = ?', whereArgs: [mem]);
-    } else {
-      await db.update('judyth_task', {'childIDs': 0}, where: 'id = ?', whereArgs: [mem]);
-    }
-  }
-
-  Future setParentId(int mem, int parent) async {
-    final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
-    final db = await database;
-    await db.update('judyth_task', {'parentId': parent}, where: 'id = ?', whereArgs: [mem]);
-    //print("Versuch parentID zu äbndert $mem zu $parent");
-  }
-
-  Future changeParentStatus(int parent, int status) async {
-    final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
-    final db = await database;
-    print('Der Tyz des Status ${status.runtimeType}');
-    if (status == 1) {
-          await db.update('judyth_task', {'status': 1}, where: 'id = ?', whereArgs: [parent]);
-    } else {
-          await db.update('judyth_task', {'status': 0}, where: 'id = ?', whereArgs: [parent]);
-    }
-  }
-
-  Future<bool> isParent(int mem) async {
-    final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
-    final db = await database;
-
-    List<Map<String, Object?>> tempParent = await db.rawQuery('SELECT * FROM judyth_task WHERE parentId = ?', [mem]);
-    //print("Parent Liste: $tempParent");
-    if (tempParent.isNotEmpty) {
-      //print("Return true");
-      return true;
-    } else {
-      //print("Return false");
-      return false;
-    }
-  }
-
-  dynamic zuruckCheck(int mem) async {
-    //Check if there is a task in the current level and set the child state for the receiving parent
-
-    final database = openDatabase(join(await getDatabasesPath(), 'judyth_memory.db'));
-    final db = await database;
-
-    List<Map<String, Object?>> tempParent = await db.rawQuery('SELECT * FROM judyth_task WHERE parentId = ?', [mem]);
-    //print("Parent Liste: $tempParent");
-    if (tempParent.isNotEmpty) {
-      // Heist das ein task in der childliste ist, also muss der parent task ein child von 1 bekommen
-      changeChildStatus(mem, 1);
-
-      // Checken ob in einem der Children der Status 1 ist
-      print('Anzahl der Elemente in der Liste: ${tempParent.length} : ${tempParent}');
-      int tempstatus=0;
-      for (var i = 0; i < tempParent.length; i++) {
-        if (tempParent[i]['status'] == 1) {
-          tempstatus = 1;
-        }
-      }
-      if (tempstatus == 1) {
-        changeParentStatus(mem,1);
-      } else {
-        changeParentStatus(mem,0);
-      }
-
-      //print("TaskID: $mem Return true");
-    } else {
-      changeChildStatus(mem, 0);
-      //print("TaskID: $mem Return false");
-    }
-    return 1;
   }
 
   final _textcontroler = TextEditingController();
 
   List<dynamic> tmpList = [];
-  /*void initState() {
-    super.initState();
-    //initialization();
-    print("Start"); 
-    //List<dynamic> tmplist = widget.memoryList;
-    //print("TMP MemoryList: $tmplist");
-  }*/
+
+  int colorCode = 2;
 
   late Future<List<dynamic>> myTaskList;
+  late Future<Map<int, ColorPalette>> myColor;
 
   @override
   void initState() {
     super.initState();
     myTaskList = getTaskList(widget.memoryList);
+    myColor = loadColorPalettes();
+    //print(myColor[1].color[1][2]);
   }
 
   Widget build(BuildContext context) {
@@ -175,6 +133,7 @@ class _MainscreenState extends State<Mainscreen> {
     //print('TMP-List at start = : ${widget.memoryList}');
 
     //print("MemoryList: $widget.memoryList");
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 144, 144, 144),
@@ -200,86 +159,51 @@ class _MainscreenState extends State<Mainscreen> {
       ),
       body: Container(
         decoration: const BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/judyth-background.jpg'), fit: BoxFit.cover),
+          image: DecorationImage(image: AssetImage('assets/judyth-background-ml.jpg'), fit: BoxFit.cover),
         ),
         child: Padding(
           padding: const EdgeInsets.all(0.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /*Padding (padding: EdgeInsets.only(left: 15),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /*InkWell(
-                        onTap: () {
-                          
-                          Navigator.pop(context);
-                          setState(() {
-                            //_textinput = _textcontroler.text;
-                            print('List middle = : ${widget.memoryList.length}'); 
-                          });
-                        },
-                        child: Icon(
-                          (widget.memoryList.length > 1) ? Icons.navigate_before : Icons.error_outline,
-                          color: Color.fromARGB(255, 9, 7, 7),
-                          size: 30,
-                        ),
-                      ),*/
-
-                      Text (
-                        "Todo: ${widget.taskName}",
-                        style: TextStyle(
-                        fontSize: 24,
-                         fontWeight: FontWeight.bold,
-                         color: Colors.black
-                        ),
-                      )
-                      
-                    ],
-                  ),
-              ),  */
-
-              /* Abstandshalter Titel Liste */
-              //SizedBox(height: 20, width: double.infinity),
-
-              /* Liste mit tasks */
               FutureBuilder<List<dynamic>>(
-                future: myTaskList,
+                future: Future.wait([myTaskList, myColor]),
                 builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
                   List<Widget> children;
                   if (snapshot.hasData) {
+                    Map<int, ColorPalette> colors = snapshot.data![1];
                     children = <Widget>[
-                      /*Padding(
-                              padding: EdgeInsets.only(top: 16),
-                              child: Text('The result...${snapshot.data}'),
-                            ),*/
                       Expanded(
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
-                          itemCount: snapshot.data?.length,
+                          itemCount: snapshot.data?[0].length,
                           itemBuilder: (context, index) {
                             return Card(
                               margin: const EdgeInsets.symmetric(vertical: 2),
-                              color: const Color.fromARGB(157, 255, 126, 126),
+                              color: Color.fromARGB(
+                                colors[colorCode]!.color[index][0],
+                                colors[colorCode]!.color[index][1],
+                                colors[colorCode]!.color[index][2],
+                                colors[colorCode]!.color[index][3],
+                              ),
                               elevation: 0,
                               shape: Border(
                                 bottom: BorderSide(color: const Color.fromARGB(120, 212, 212, 212), width: 1.0),
                               ),
                               child: ListTile(
                                 /* 
-                                          Leading Icon zum Abhaken der Tasks
-                                          */
+                                Leading Icon zum Abhaken der Tasks
+                                */
                                 leading: InkWell(
                                   onTap: () async {
-                                    await changeMemmoryStatus(snapshot.data![index].id);
+                                    await changeMemmoryStatus(snapshot.data![0][index].id);
                                     setState(() {
                                       myTaskList = getTaskList(widget.memoryList);
                                     });
                                   },
                                   child: Icon(
-                                    (snapshot.data![index].status == 0)
+                                    (snapshot.data![0][index].status == 0)
                                         ? CupertinoIcons.square
                                         : CupertinoIcons.minus_square,
                                     color: Color.fromARGB(255, 9, 7, 7),
@@ -288,44 +212,44 @@ class _MainscreenState extends State<Mainscreen> {
                                 ),
 
                                 /* 
-                                          TaskText
-                                          */
+                                TaskText
+                                */
                                 title: Text(
-                                  snapshot.data![index].task,
+                                  snapshot.data![0][index].task,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 20,
-                                    color: Color.fromARGB(255, 0, 0, 0),
+                                    color: Color.fromARGB(255, 150, 149, 149),
                                   ),
                                 ),
 
                                 /*
-                                      EndIcon zum weitergehen in die Untertasks
-                                    */
+                                EndIcon zum weitergehen in die Untertasks
+                                */
                                 trailing: InkWell(
                                   onTap: () async {
-                                    setParentId(snapshot.data![index].id, widget.memoryList.last);
+                                    setParentId(snapshot.data![0][index].id, widget.memoryList.last);
 
                                     //widget.memoryList.add(snapshot.data![index].id);
                                     tmpList = List.from(widget.memoryList);
-                                    tmpList.add(snapshot.data![index].id);
+                                    tmpList.add(snapshot.data![0][index].id);
                                     //print('TMP-List = : $tmpList');
 
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            Mainscreen(taskName: snapshot.data![index].task, memoryList: tmpList),
+                                            Mainscreen(taskName: snapshot.data![0][index].task, memoryList: tmpList),
                                       ),
                                     ).then((_) {
-                                      print(snapshot.data![index].childIDs);
+                                      print(snapshot.data![0][index].childIDs);
                                       setState(() {
                                         myTaskList = getTaskList(widget.memoryList);
                                       });
                                       print("The State is set");
                                     });
                                   },
-                                  child: (snapshot.data![index].childIDs != 0)
+                                  child: (snapshot.data![0][index].childIDs != 0)
                                       ? Icon(Icons.arrow_circle_right, color: Color.fromARGB(255, 0, 0, 0), size: 30)
                                       : Icon(
                                           Icons.arrow_circle_right,
@@ -355,88 +279,50 @@ class _MainscreenState extends State<Mainscreen> {
                   );
                 },
               ),
-
-              /*
-
-                Untere Eingabe der Tasks
-
-                
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(132, 180, 180, 180),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.75,
-                        child: TextField(
-                          controller: _textcontroler,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter item to remember',
-                            hintStyle: TextStyle(fontSize: 20.0, color: Color(0X66000000)),
-                            contentPadding: EdgeInsets.all(10.0),
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                          ),
-
-                          style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 20, color: Color(0xFF000000)),
-                          onSubmitted: (value) {
-                            insertDB(_textcontroler.text, widget.memoryList);
-                            setState(() {
-                              myTaskList = getTaskList(widget.memoryList);
-                              _textcontroler.clear();
-                            });
-                          },
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          insertDB(_textcontroler.text, widget.memoryList);
-                          print("New Task Added");
-                          setState(() {
-                            myTaskList = getTaskList(widget.memoryList);
-
-                            //_textinput =
-                            _textcontroler.clear();
-                          });
-                        },
-                        child: const Icon(Icons.add_circle, color: Colors.black, size: 30),
-                      ),
-                    ],
-                  ),
-                ),
-              ),*/
-
-              
-
             ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-                items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.home),
-                        label: 'home',
-                    ),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.add_circle),
-                        label: 'Add Task',
-                    ),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.settings),
-                        label: 'Settings',
-                    ),
-                ],
-                //currentIndex: _selectedIndex,
-                //onTap: _onItemTapped,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Action for the button
+          _showTextInput(context);
+        },
+        shape: const CircleBorder(side: BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 2)),
+        mini: false,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        elevation: 0,
+
+        child: Icon(Icons.add_circle, size: 30, color: Color.fromARGB(255, 80, 80, 80)),
+      ),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      bottomNavigationBar: Container(
+        height: 60,
+        decoration: BoxDecoration(
+          color: Color.fromARGB(150, 255, 255, 255),
+          //boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: Icon(Icons.home, color: Color.fromARGB(255, 111, 111, 111)),
+              onPressed: () {
+                // Home action
+              },
             ),
+            SizedBox(width: 40), // Space for the FAB
+            IconButton(
+              icon: Icon(Icons.settings, color: Color.fromARGB(255, 111, 111, 111)),
+              onPressed: () {
+                // Settings action
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
