@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:judyth/main_screen.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
+//import 'package:sqflite/sqflite.dart';
+//import 'package:path/path.dart';
 //import 'test.dart';
 
 void main() async {
