@@ -114,7 +114,7 @@ class _MainscreenState extends State<Mainscreen> {
 
   List<dynamic> tmpList = [];
 
-  int colorCode = 2;
+  int colorCode = 4;
 
   late Future<List<dynamic>> myTaskList;
   late Future<Map<int, ColorPalette>> myColor;
