@@ -114,7 +114,7 @@ class _MainscreenState extends State<Mainscreen> {
 
   List<dynamic> tmpList = [];
 
-  int colorCode = 4;
+  int colorCode = 2;
 
   late Future<List<dynamic>> myTaskList;
   late Future<Map<int, ColorPalette>> myColor;
@@ -171,17 +171,36 @@ class _MainscreenState extends State<Mainscreen> {
                 child: Text('Judyth Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
               ),
               ListTile(
-                leading: Icon(Icons.home),
-                title: Text('Home'),
+                leading: Icon(Icons.palette),
+                title: Text('color1'),
                 onTap: () {
                   // Handle Home tap
+                  setState(() {
+                    colorCode = 2;
+                  });
+                  Navigator.pop(context);
                 },
               ),
               ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Settings'),
+                leading: Icon(Icons.palette),
+                title: Text('color1'),
+                onTap: () {
+                  // Handle Home tap
+                  setState(() {
+                    colorCode = 3;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.palette),
+                title: Text('color2'),
                 onTap: () {
                   // Handle Settings tap
+                  setState(() {
+                    colorCode = 4;
+                  });
+                  Navigator.pop(context);
                 },
               ),
             ],
