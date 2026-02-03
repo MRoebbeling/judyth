@@ -134,76 +134,47 @@ class _MainscreenState extends State<Mainscreen> {
 
     //print("MemoryList: $widget.memoryList");
 
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(image: AssetImage('assets/judyth-background-ml.jpg'), fit: BoxFit.cover),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 144, 144, 144),
+        elevation: 0,
+        centerTitle: false,
+        leading: (widget.memoryList.length > 1)
+            ? InkWell(
+                //Falls die memoryList mehr als ein Element hat, zeige den Zurück-Button an
+                onTap: () async {
+                  await zuruckCheck(widget.memoryList.last);
+                  setState(() {
+                    myTaskList = getTaskList(widget.memoryList);
+                  });
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.navigate_before, color: Color.fromARGB(255, 9, 7, 7)),
+              )
+            : null, //Sonnst, kein Zurückbotton (NULL)
+        title: Text(
+          "Todo: ${widget.taskName}",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
       ),
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          centerTitle: false,
-          leading: (widget.memoryList.length > 1)
-              ? InkWell(
-                  //Falls die memoryList mehr als ein Element hat, zeige den Zurück-Button an
-                  onTap: () async {
-                    await zuruckCheck(widget.memoryList.last);
-                    setState(() {
-                      myTaskList = getTaskList(widget.memoryList);
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: Icon(Icons.navigate_before, color: Color.fromARGB(255, 9, 7, 7)),
-                )
-              : null, //Sonnst, kein Zurückbotton (NULL)
-          title: Text(
-            "Todo: ${widget.taskName}",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-          ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(image: AssetImage('assets/judyth-background-ml.jpg'), fit: BoxFit.cover),
         ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                decoration: BoxDecoration(color: const Color.fromARGB(255, 114, 114, 114)),
-                child: Text('Judyth Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
-              ),
-              ListTile(
-                leading: Icon(Icons.home),
-                title: Text('Home'),
-                onTap: () {
-                  // Handle Home tap
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Settings'),
-                onTap: () {
-                  // Handle Settings tap
-                },
-              ),
-            ],
-          ),
-        ),
-        body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(image: AssetImage('assets/judyth-background-ml.jpg'), fit: BoxFit.cover),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FutureBuilder<List<dynamic>>(
-                  future: Future.wait([myTaskList, myColor]),
-                  builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-                    List<Widget> children;
-                    if (snapshot.hasData) {
-                      Map<int, ColorPalette> colors = snapshot.data![1];
-                      children = <Widget>[
-                        ListView.builder(
+        child: Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FutureBuilder<List<dynamic>>(
+                future: Future.wait([myTaskList, myColor]),
+                builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+                  List<Widget> children;
+                  if (snapshot.hasData) {
+                    Map<int, ColorPalette> colors = snapshot.data![1];
+                    children = <Widget>[
+                      Expanded(
+                        child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
                           itemCount: snapshot.data?[0].length,
@@ -222,8 +193,8 @@ class _MainscreenState extends State<Mainscreen> {
                               ),
                               child: ListTile(
                                 /* 
-                                  Leading Icon zum Abhaken der Tasks
-                                  */
+                                Leading Icon zum Abhaken der Tasks
+                                */
                                 leading: InkWell(
                                   onTap: () async {
                                     await changeMemmoryStatus(snapshot.data![0][index].id);
@@ -241,8 +212,8 @@ class _MainscreenState extends State<Mainscreen> {
                                 ),
 
                                 /* 
-                                  TaskText
-                                  */
+                                TaskText
+                                */
                                 title: Text(
                                   snapshot.data![0][index].task,
                                   style: const TextStyle(
@@ -253,8 +224,8 @@ class _MainscreenState extends State<Mainscreen> {
                                 ),
 
                                 /*
-                                  EndIcon zum weitergehen in die Untertasks
-                                  */
+                                EndIcon zum weitergehen in die Untertasks
+                                */
                                 trailing: InkWell(
                                   onTap: () async {
                                     setParentId(snapshot.data![0][index].id, widget.memoryList.last);
@@ -290,65 +261,67 @@ class _MainscreenState extends State<Mainscreen> {
                             );
                           },
                         ),
-                      ];
-                    } else if (snapshot.hasError) {
-                      children = <Widget>[
-                        const Icon(Icons.error_outline, color: Color.fromARGB(255, 153, 255, 0), size: 60),
-                        Padding(padding: const EdgeInsets.only(top: 16), child: Text('Error: ${snapshot.error}')),
-                      ];
-                    } else {
-                      children = const <Widget>[
-                        SizedBox(width: 60, height: 60, child: CircularProgressIndicator()),
-                        Padding(padding: EdgeInsets.only(top: 16), child: Text('Awaiting result...')),
-                      ];
-                    }
-                    return Column(mainAxisAlignment: MainAxisAlignment.start, children: children);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Action for the button
-            _showTextInput(context);
-          },
-          shape: const CircleBorder(side: BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 2)),
-          mini: false,
-          backgroundColor: Color.fromARGB(255, 255, 255, 255),
-          elevation: 0,
-
-          child: Icon(Icons.add, size: 30, color: Color.fromARGB(255, 80, 80, 80)),
-        ),
-
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-
-        /*bottomNavigationBar: Container(
-          height: 60,
-          decoration: BoxDecoration(
-            color: Color.fromARGB(150, 255, 255, 255),
-            //boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                icon: Icon(Icons.home, color: Color.fromARGB(255, 111, 111, 111)),
-                onPressed: () {
-                  // Home action
-                },
-              ),
-              SizedBox(width: 40), // Space for the FAB
-              IconButton(
-                icon: Icon(Icons.settings, color: Color.fromARGB(255, 111, 111, 111)),
-                onPressed: () {
-                  // Settings action
+                      ),
+                    ];
+                  } else if (snapshot.hasError) {
+                    children = <Widget>[
+                      const Icon(Icons.error_outline, color: Color.fromARGB(255, 153, 255, 0), size: 60),
+                      Padding(padding: const EdgeInsets.only(top: 16), child: Text('Error: ${snapshot.error}')),
+                    ];
+                  } else {
+                    children = const <Widget>[
+                      SizedBox(width: 60, height: 60, child: CircularProgressIndicator()),
+                      Padding(padding: EdgeInsets.only(top: 16), child: Text('Awaiting result...')),
+                    ];
+                  }
+                  return Expanded(
+                    child: Column(mainAxisAlignment: MainAxisAlignment.start, children: children),
+                  );
                 },
               ),
             ],
           ),
-        ),*/
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Action for the button
+          _showTextInput(context);
+        },
+        shape: const CircleBorder(side: BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 2)),
+        mini: false,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        elevation: 0,
+
+        child: Icon(Icons.add_circle, size: 30, color: Color.fromARGB(255, 80, 80, 80)),
+      ),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      bottomNavigationBar: Container(
+        height: 60,
+        decoration: BoxDecoration(
+          color: Color.fromARGB(150, 255, 255, 255),
+          //boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: Icon(Icons.home, color: Color.fromARGB(255, 111, 111, 111)),
+              onPressed: () {
+                // Home action
+              },
+            ),
+            SizedBox(width: 40), // Space for the FAB
+            IconButton(
+              icon: Icon(Icons.settings, color: Color.fromARGB(255, 111, 111, 111)),
+              onPressed: () {
+                // Settings action
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
