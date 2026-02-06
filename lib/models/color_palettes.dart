@@ -41,7 +41,7 @@ Future<Map<int, ColorPalette>> loadColorPalettes() async {
     var paletteData = colorPalettesData[index].values.first;
     ColorPalette palette = ColorPalette.fromJson(paletteData);
     colorPalettes[palette.id] = palette;
-    //print('Loaded Palette ID: ${palette.id}, Name: ${palette.paletteName}, Colors : ${palette.color}');
+    print('Loaded Palette ID: ${palette.id}, Name: ${palette.paletteName}, Colors : ${palette.color}');
   }
   //print(colorPalettes[1]!.paletteName);
   return colorPalettes;

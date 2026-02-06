@@ -71,7 +71,7 @@ class _MainAppState extends State<MainApp> {
           decoration: const BoxDecoration(
             image: DecorationImage(image: AssetImage('assets/background.jpg'), fit: BoxFit.cover),
           ),
-          child: const Mainscreen(taskName: "Daily Task", memoryList: [0]),
+          child: const Mainscreen(taskName: "judyth", memoryList: [0]),
         ),
       ),
     );

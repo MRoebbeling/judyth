@@ -49,19 +49,6 @@ class _MainscreenState extends State<Mainscreen> {
                   ],
                 ),
                 SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(CupertinoIcons.house, size: 30, color: Colors.grey),
-                    Icon(CupertinoIcons.person_crop_circle, size: 30, color: Colors.grey),
-                    Icon(CupertinoIcons.tree, size: 30, color: Colors.grey),
-                    Icon(CupertinoIcons.bell, size: 30, color: Colors.grey),
-                    Icon(CupertinoIcons.tortoise, size: 30, color: Colors.grey),
-                    Icon(CupertinoIcons.rocket, size: 30, color: Colors.grey),
-                    Icon(CupertinoIcons.phone, size: 30, color: Colors.grey),
-                  ],
-                ),
-                SizedBox(height: 16),
                 TextField(
                   controller: _textcontroler,
                   autofocus: true, // Opens keyboard automatically
@@ -81,7 +68,7 @@ class _MainscreenState extends State<Mainscreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton(
+                    ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context); // Close the bottom sheet
                       },
@@ -101,7 +88,7 @@ class _MainscreenState extends State<Mainscreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 32),
               ],
             ),
           ),
@@ -141,9 +128,9 @@ class _MainscreenState extends State<Mainscreen> {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
+          centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0.0,
-          centerTitle: false,
           leading: (widget.memoryList.length > 1)
               ? InkWell(
                   //Falls die memoryList mehr als ein Element hat, zeige den Zurück-Button an
@@ -158,8 +145,8 @@ class _MainscreenState extends State<Mainscreen> {
                 )
               : null, //Sonnst, kein Zurückbotton (NULL)
           title: Text(
-            "Todo: ${widget.taskName}",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+            "${widget.taskName}",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.normal, color: Colors.black),
           ),
         ),
         drawer: Drawer(
@@ -210,10 +197,7 @@ class _MainscreenState extends State<Mainscreen> {
           decoration: const BoxDecoration(
             image: DecorationImage(image: AssetImage('assets/judyth-background-ml.jpg'), fit: BoxFit.cover),
           ),
-          child: Center(
             child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FutureBuilder<List<dynamic>>(
                   future: Future.wait([myTaskList, myColor]),
@@ -230,10 +214,10 @@ class _MainscreenState extends State<Mainscreen> {
                             return Card(
                               margin: const EdgeInsets.symmetric(vertical: 2),
                               color: Color.fromARGB(
-                                colors[colorCode]!.color[index][0],
-                                colors[colorCode]!.color[index][1],
-                                colors[colorCode]!.color[index][2],
-                                colors[colorCode]!.color[index][3],
+                                colors[colorCode]!.color[index % 8][0],
+                                colors[colorCode]!.color[index % 8][1],
+                                colors[colorCode]!.color[index % 8][2],
+                                colors[colorCode]!.color[index % 8][3],
                               ),
                               elevation: 0,
                               shape: Border(
@@ -254,7 +238,12 @@ class _MainscreenState extends State<Mainscreen> {
                                     (snapshot.data![0][index].status == 0)
                                         ? CupertinoIcons.square
                                         : CupertinoIcons.minus_square,
-                                    color: Color.fromARGB(255, 9, 7, 7),
+                                    color: Color.fromARGB(
+                                      (255).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][1])/2).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][2])/2).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][3])/2).toInt(),
+                                    ),
                                     size: 30,
                                   ),
                                 ),
@@ -264,10 +253,15 @@ class _MainscreenState extends State<Mainscreen> {
                                   */
                                 title: Text(
                                   snapshot.data![0][index].task,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 20,
-                                    color: Color.fromARGB(255, 150, 149, 149),
+                                    color: Color.fromARGB(
+                                      (255).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][1])/2).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][2])/2).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][3])/2).toInt(),
+                                    ),
                                   ),
                                 ),
 
@@ -298,10 +292,20 @@ class _MainscreenState extends State<Mainscreen> {
                                     });
                                   },
                                   child: (snapshot.data![0][index].childIDs != 0)
-                                      ? Icon(Icons.arrow_circle_right, color: Color.fromARGB(255, 0, 0, 0), size: 30)
+                                      ? Icon(Icons.arrow_forward_ios, color: Color.fromARGB(
+                                      (255).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][1])/2).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][2])/2).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][3])/2).toInt(),
+                                    ))
                                       : Icon(
-                                          Icons.arrow_circle_right,
-                                          color: Color.fromARGB(255, 191, 191, 191),
+                                          Icons.arrow_forward_ios,
+                                          color: Color.fromARGB(
+                                      (30).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][1])/2).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][2])/2).toInt(),
+                                      ((colors[colorCode]!.color[index % 8][3])/2).toInt(),
+                                    ),
                                           size: 30,
                                         ),
                                 ),
@@ -326,7 +330,6 @@ class _MainscreenState extends State<Mainscreen> {
                 ),
               ],
             ),
-          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {

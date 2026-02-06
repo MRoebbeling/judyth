@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:judyth/db_methods.dart';
 
 
-void _showTextInput(BuildContext context, TextEditingController _textcontroler, String taskName, List memoryList) {
+void _showTextInput(BuildContext context, TextEditingController textcontroler, String taskName, List memoryList) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // Allows the sheet to push up with the keyboard
@@ -45,7 +45,7 @@ void _showTextInput(BuildContext context, TextEditingController _textcontroler, 
                 ),
                 SizedBox(height: 16),
                 TextField(
-                  controller: _textcontroler,
+                  controller: textcontroler,
                   autofocus: true, // Opens keyboard automatically
                   decoration: InputDecoration(
                     hintText: 'Type something...',
@@ -72,11 +72,8 @@ void _showTextInput(BuildContext context, TextEditingController _textcontroler, 
                     ElevatedButton(
                       onPressed: () async {
                         // Handle the submission logic here
-                        await insertDB(_textcontroler.text, widget.memoryList);
-                        setState(() {
-                          _textcontroler.clear();
-                          myTaskList = getTaskList(widget.memoryList);
-                        });
+                        await insertDB(textcontroler.text, memoryList);
+                        textcontroler.clear();
                         Navigator.pop(context); // Close the bottom sheet
                       },
                       child: Text('Add'),
@@ -90,4 +87,5 @@ void _showTextInput(BuildContext context, TextEditingController _textcontroler, 
         );
       },
     );
+    //return(context);
   }
